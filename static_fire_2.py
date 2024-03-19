@@ -1,7 +1,7 @@
 # %%
 import os
 from datetime import datetime, timedelta
-from ipywidgets import interactive, IntSlider, Layout
+from ipywidgets import interactive, FloatSlider, Layout
 from pytz import timezone
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -179,10 +179,11 @@ full_xlim = to_ts_range(start, window)
 
 
 def slider(value):
-    return IntSlider(
+    return FloatSlider(
         value,
-        full_xlim[0],
-        full_xlim[1],
+        min=full_xlim[0] / 1e6,
+        max=full_xlim[1] / 1e6,
+        step=1,
         continuous_update=False,
         layout=Layout(width="100%"),
     )
@@ -230,7 +231,10 @@ def test(x_min, x_max):
     print("Total impulse (pound*sec): ", total_impulse)
 
 
-def plot_fn(x_min, x_max):
+def plot_fn(x_min_sec, x_max_sec):
+    x_min = x_min_sec * 1e6
+    x_max = x_max_sec * 1e6
+
     test(x_min, x_max)
 
     plot_with_windows(sci, ["st1_psi", "st2_psi"], "OX Transducers", [x_min, x_max])
@@ -239,4 +243,10 @@ def plot_fn(x_min, x_max):
     plot_with_windows(lc2, "thrust_med", "Load Cell 2", [x_min, x_max])
 
 
-interactive(plot_fn, x_min=slider(full_xlim[0]), x_max=slider(full_xlim[1]))
+interactive(
+    plot_fn,
+    x_min_sec=slider(full_xlim[0] / 1e6),
+    x_max_sec=slider(full_xlim[1] / 1e6),
+)
+
+# %%
