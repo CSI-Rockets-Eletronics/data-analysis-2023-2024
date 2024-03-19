@@ -6,6 +6,7 @@ from pytz import timezone
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import hashlib
 
 # %%
 # Dont edit this cell!!!
@@ -20,8 +21,10 @@ window = timedelta(minutes=20)
 
 
 def get_csv_with_cache(url):
+    url_hash = hashlib.sha256(url.encode()).hexdigest()
+
     os.makedirs("cache", exist_ok=True)
-    cache_file = os.path.join("cache", str(hash(url)) + ".csv")
+    cache_file = os.path.join("cache", url_hash + ".csv")
 
     if os.path.exists(cache_file):
         return pd.read_csv(cache_file)
