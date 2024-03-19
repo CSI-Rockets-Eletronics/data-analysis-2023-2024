@@ -224,10 +224,13 @@ def test(x_min, x_max):
     lc1_range = lc1[(lc1["ts"] >= x_min) & (lc1["ts"] <= x_max)]
     lc2_range = lc2[(lc2["ts"] >= x_min) & (lc2["ts"] <= x_max)]
 
+    mass1 =  lc1['ts'].index(100000)
+    mass2 =  lc1['thrust'].min(axis=0)
     lc1_impulse = calculate_impulse(lc1_range, x_min, x_max)
     lc2_impulse = calculate_impulse(lc2_range, x_min, x_max)
     total_impulse = lc1_impulse + lc2_impulse
-
+    print('mass1', mass1)
+    print('mass2', mass2)
     print("Total impulse (pound*sec): ", total_impulse)
 
 def calculate_mass_flow(df, x_min, x_max):
@@ -245,7 +248,6 @@ def calculate_mass_flow(df, x_min, x_max):
         mass_flow += avg_thrust / 9.80665 / dt
 
     return mass_flow
-
 
 def test2(x_min, x_max):
     lc1_range = lc1[(lc1["ts"] >= x_min) & (lc1["ts"] <= x_max)]
