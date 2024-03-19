@@ -21,7 +21,7 @@ window = timedelta(minutes=20)
 
 def get_csv_with_cache(url):
     os.makedirs("cache", exist_ok=True)
-    cache_file = os.path.join("cache", url.replace("/", "_") + ".csv")
+    cache_file = os.path.join("cache", str(hash(url)) + ".csv")
 
     if os.path.exists(cache_file):
         return pd.read_csv(cache_file)
@@ -102,6 +102,7 @@ state_names = {
     40: "custom",
 }
 
+
 # %%
 def create_windows(df_plot, fs, xlim):
     """
@@ -166,7 +167,10 @@ def create_windows(df_plot, fs, xlim):
         last_ts = fs["ts"][i]
     return rects
 
+
 # %%
+SHOW_WINDOWS = False
+
 # plot data
 full_xlim = to_ts_range(start, window)
 
@@ -186,11 +190,13 @@ def plot_with_windows(df, y, title, xlim):
     df = df[(df["ts"] >= xlim[0]) & (df["ts"] <= xlim[1])]
     sci_plot = df.plot("ts", y, title=title, figsize=(15, 3))
 
-    # https://www.geeksforgeeks.org/matplotlib-axes-axes-add_patch-in-python/
-    for rect in create_windows(sci_plot, fs, xlim):
-        sci_plot.add_patch(rect)
+    if SHOW_WINDOWS:
+        # https://www.geeksforgeeks.org/matplotlib-axes-axes-add_patch-in-python/
+        for rect in create_windows(sci_plot, fs, xlim):
+            sci_plot.add_patch(rect)
 
     plt.show()
+
 
 # %%
 def calculate_impulse(df, x_min, x_max):
@@ -231,5 +237,3 @@ def plot_fn(x_min, x_max):
 
 
 interactive(plot_fn, x_min=slider(full_xlim[0]), x_max=slider(full_xlim[1]))
-
-
