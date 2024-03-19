@@ -178,12 +178,12 @@ SHOW_WINDOWS = False
 full_xlim = to_ts_range(start, window)
 
 
-def slider(value):
+def slider(value, min=full_xlim[0] / 1e6, max=full_xlim[1] / 1e6, step=1):
     return FloatSlider(
         value,
-        min=full_xlim[0] / 1e6,
-        max=full_xlim[1] / 1e6,
-        step=1,
+        min=min,
+        max=max,
+        step=step,
         continuous_update=False,
         layout=Layout(width="100%"),
     )
@@ -231,9 +231,12 @@ def test(x_min, x_max):
     print("Total impulse (pound*sec): ", total_impulse)
 
 
-def plot_fn(x_min_sec, x_max_sec):
-    x_min = x_min_sec * 1e6
-    x_max = x_max_sec * 1e6
+def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
+    x_min = x_min_sec * 1e6 + x_min_fine_sec * 1e6
+    x_max = x_max_sec * 1e6 + x_max_fine_sec * 1e6
+
+    print("Min ts (sec): ", x_min / 1e6)
+    print("Max ts (sec): ", x_max / 1e6)
 
     test(x_min, x_max)
 
@@ -247,6 +250,8 @@ interactive(
     plot_fn,
     x_min_sec=slider(full_xlim[0] / 1e6),
     x_max_sec=slider(full_xlim[1] / 1e6),
+    x_min_fine_sec=slider(0, min=-1, max=1, step=0.01),
+    x_max_fine_sec=slider(0, min=-1, max=1, step=0.01),
 )
 
 # %%
