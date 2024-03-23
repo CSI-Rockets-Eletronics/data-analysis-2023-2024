@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import hashlib
+import numpy as np
 
 # %%
 # Dont edit this cell!!!
@@ -224,41 +225,30 @@ def test(x_min, x_max):
     lc1_range = lc1[(lc1["ts"] >= x_min) & (lc1["ts"] <= x_max)]
     lc2_range = lc2[(lc2["ts"] >= x_min) & (lc2["ts"] <= x_max)]
 
-    mass1 =  lc1['ts'].index(100000)
-    mass2 =  lc1['thrust'].min(axis=0)
     lc1_impulse = calculate_impulse(lc1_range, x_min, x_max)
     lc2_impulse = calculate_impulse(lc2_range, x_min, x_max)
     total_impulse = lc1_impulse + lc2_impulse
-    print('mass1', mass1)
-    print('mass2', mass2)
+
+    #start_index = 170927
+    time_index =  170800
+
+    mass1 =  -lc1['thrust'].iloc[time_index]
+    mass2 = -lc2['thrust'].iloc[time_index]
+    total_mass = (mass1 + mass2)*0.453592
+    delta_t = 1709325511.8-1709325505.41
+
+    print(delta_t)
+    #print(mass1)
+    #print(mass2)
+
+    CCPressure = roc[(roc['ts'] >= 1709325505541000) & (roc['ts'] <= 1709325511710000)]['bt2_psi']
+    average_pressure = np.mean(CCPressure)
+    
+    print('total mass:', total_mass, 'kg')
+    print('delta t:', delta_t, 'sec')
+    print('mass flow:', total_mass/delta_t ,'kg/s')
     print("Total impulse (pound*sec): ", total_impulse)
-
-def calculate_mass_flow(df, x_min, x_max):
-    """
-    Integrates thrust using trapezoidal. Returns thrust in pound*sec.
-    """
-
-    df_range = df[(df["ts"] >= x_min) & (df["ts"] <= x_max)]
-    mass_flow = 0
-
-    for i in range(1, len(df_range)):
-        dt = df_range["ts"].iloc[i] - df_range["ts"].iloc[i - 1]
-        dt /= 1e6  # convert to seconds
-        avg_thrust = ((df_range["thrust"].iloc[i] + df_range["thrust"].iloc[i - 1]) / 2)*4.4482
-        mass_flow += avg_thrust / 9.80665 / dt
-
-    return mass_flow
-
-def test2(x_min, x_max):
-    lc1_range = lc1[(lc1["ts"] >= x_min) & (lc1["ts"] <= x_max)]
-    lc2_range = lc2[(lc2["ts"] >= x_min) & (lc2["ts"] <= x_max)]
-
-    lc1_mdot = calculate_mass_flow(lc1_range, x_min, x_max)
-    lc2_mdot = calculate_mass_flow(lc2_range, x_min, x_max)
-    total_liquid_mass_flow = lc1_mdot + lc2_mdot
-
-    print("Total liquid mass flow (kg/sec): ", total_liquid_mass_flow)
-
+    print('Average Pressure Liquid:', average_pressure , 'psi')
 
 def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     x_min = x_min_sec * 1e6 + x_min_fine_sec * 1e6
@@ -268,7 +258,6 @@ def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     print("Max ts (sec): ", x_max / 1e6)
 
     test(x_min, x_max)
-    test2(x_min, x_max)
 
     plot_with_windows(sci, ["st1_psi", "st2_psi"], "OX Transducers", [x_min, x_max])
     plot_with_windows(roc, ["bt1_psi", "bt2_psi"], "CC Transducers", [x_min, x_max])
@@ -276,12 +265,14 @@ def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     plot_with_windows(lc2, "thrust_med", "Load Cell 2", [x_min, x_max])
 
 
+    
+
 interactive(
     plot_fn,
     x_min_sec=slider(1709325505.00),
     x_max_sec=slider(1709325519.00),
-    x_min_fine_sec=slider(0, min=-1, max=1, step=0.01),
-    x_max_fine_sec=slider(0, min=-1, max=1, step=0.01),
+    x_min_fine_sec=slider(0, min=-1.2, max=1.2, step=0.01),
+    x_max_fine_sec=slider(0, min=-1.2, max=1.2, step=0.01),
 )
 
 # %%
