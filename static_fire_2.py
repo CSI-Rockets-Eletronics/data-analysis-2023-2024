@@ -230,6 +230,7 @@ def test(x_min, x_max):
 
     print("Total impulse (pound*sec): ", total_impulse)
 
+
 def calculate_mass_flow(df, x_min, x_max):
     """
     Integrates thrust using trapezoidal. Returns thrust in pound*sec.
@@ -241,7 +242,9 @@ def calculate_mass_flow(df, x_min, x_max):
     for i in range(1, len(df_range)):
         dt = df_range["ts"].iloc[i] - df_range["ts"].iloc[i - 1]
         dt /= 1e6  # convert to seconds
-        avg_thrust = ((df_range["thrust"].iloc[i] + df_range["thrust"].iloc[i - 1]) / 2)*4.4482
+        avg_thrust = (
+            (df_range["thrust"].iloc[i] + df_range["thrust"].iloc[i - 1]) / 2
+        ) * 4.4482
         mass_flow += avg_thrust / 9.80665 / dt
 
     return mass_flow
