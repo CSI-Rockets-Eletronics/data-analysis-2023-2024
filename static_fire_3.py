@@ -195,7 +195,7 @@ def slider(value, min=full_xlim[0] / 1e6, max=full_xlim[1] / 1e6, step=1):
 def plot_with_windows(df, y, title, xlim):
     # trim df so ylim is only for data in range
     df = df[(df["ts"] >= xlim[0]) & (df["ts"] <= xlim[1])]
-    sci_plot = df.plot("ts", y, title=title, figsize=(15, 3), style=".")
+    sci_plot = df.plot("ts", y, title=title, figsize=(15, 3))
 
     if SHOW_WINDOWS:
         # https://www.geeksforgeeks.org/matplotlib-axes-axes-add_patch-in-python/
