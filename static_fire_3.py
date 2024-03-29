@@ -7,17 +7,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import hashlib
-import numpy as np
 
 # %%
 # Dont edit this cell!!!
 # Run this cell once to fetch all the data into memory.
 
 # set the server to fetch from
-base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
+base_url = "http://fs-pi.local:3000"
 
 # set time range for fetching the full data
-start = datetime(year=2024, month=3, day=1, hour=15, minute=25)
+start = datetime(year=2024, month=3, day=22, hour=15, minute=17)
 window = timedelta(minutes=20)
 
 
@@ -75,14 +74,17 @@ lc2["thrust"] = -lc2["data"]
 
 # compute moving median of load cell data
 median_window = 10
-lc1["thrust_med"] = lc1["thrust"].rolling(window=100).median()
-lc2["thrust_med"] = lc2["thrust"].rolling(window=100).median()
+lc1["thrust_med"] = lc1["thrust"].rolling(window=30).median()
+lc2["thrust_med"] = lc2["thrust"].rolling(window=30).median()
 
 # convert mpsi to psi
 sci["st1_psi"] = sci["st1"] / 1000
 sci["st2_psi"] = sci["st2"] / 1000
 roc["bt1_psi"] = roc["bt1"] / 1000
 roc["bt2_psi"] = roc["bt2"] / 1000
+
+# clean CC transducer data
+roc["bt1_psi"] = roc["bt1_psi"].rolling(window=30).median()
 
 # %%
 state_names = {
@@ -229,26 +231,7 @@ def test(x_min, x_max):
     lc2_impulse = calculate_impulse(lc2_range, x_min, x_max)
     total_impulse = lc1_impulse + lc2_impulse
 
-    #start_index = 170927
-    time_index =  170800
-
-    mass1 =  -lc1['thrust'].iloc[time_index]
-    mass2 = -lc2['thrust'].iloc[time_index]
-    total_mass = (mass1 + mass2)*0.453592
-    delta_t = 1709325511.8-1709325505.41
-
-    print(delta_t)
-    #print(mass1)
-    #print(mass2)
-
-    CCPressure = roc[(roc['ts'] >= 1709325505541000) & (roc['ts'] <= 1709325511710000)]['bt2_psi']
-    average_pressure = np.mean(CCPressure)
-    
-    print('total mass:', total_mass, 'kg')
-    print('delta t:', delta_t, 'sec')
-    print('mass flow:', total_mass/delta_t ,'kg/s')
     print("Total impulse (pound*sec): ", total_impulse)
-    print('Average Pressure Liquid:', average_pressure , 'psi')
 
 
 def calculate_mass_flow(df, x_min, x_max):
@@ -289,6 +272,7 @@ def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     print("Max ts (sec): ", x_max / 1e6)
 
     test(x_min, x_max)
+    test2(x_min, x_max)
 
     plot_with_windows(sci, ["st1_psi", "st2_psi"], "OX Transducers", [x_min, x_max])
     plot_with_windows(roc, ["bt1_psi", "bt2_psi"], "CC Transducers", [x_min, x_max])
@@ -296,14 +280,10 @@ def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     plot_with_windows(lc2, "thrust_med", "Load Cell 2", [x_min, x_max])
 
 
-    
-
 interactive(
     plot_fn,
-    x_min_sec=slider(1709325505.00),
-    x_max_sec=slider(1709325519.00),
-    x_min_fine_sec=slider(0, min=-1.2, max=1.2, step=0.01),
-    x_max_fine_sec=slider(0, min=-1.2, max=1.2, step=0.01),
+    x_min_sec=slider(1711139373),
+    x_max_sec=slider(1711139382),
+    x_min_fine_sec=slider(0, min=-1, max=1, step=0.01),
+    x_max_fine_sec=slider(0, min=-1, max=1, step=0.01),
 )
-
-# %%
