@@ -234,7 +234,7 @@ def test(x_min, x_max):
 
     mass1 =  -lc1['thrust'].iloc[time_index]
     mass2 = -lc2['thrust'].iloc[time_index]
-    total_mass = (mass1 + mass2)*0.453592
+    total_mass = (mass1 + mass2)*0.453592 - 1.737
     delta_t = 1709325511.8-1709325505.41
 
     print(delta_t)
@@ -243,7 +243,7 @@ def test(x_min, x_max):
 
     CCPressure = roc[(roc['ts'] >= 1709325505541000) & (roc['ts'] <= 1709325511710000)]['bt2_psi']
     average_pressure = np.mean(CCPressure)
-    
+    print(roc[(roc['ts'] >= 1709325505541000) & (roc['ts'] <= 1709325511710000)])
     print('total mass:', total_mass, 'kg')
     print('delta t:', delta_t, 'sec')
     print('mass flow:', total_mass/delta_t ,'kg/s')
