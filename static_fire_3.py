@@ -77,6 +77,20 @@ median_window = 10
 lc1["thrust_med"] = lc1["thrust"].rolling(window=30).median()
 lc2["thrust_med"] = lc2["thrust"].rolling(window=30).median()
 
+# sum load cell data
+lc_sum = pd.DataFrame()
+lc_sum["ts"] = lc1["ts"]
+lc_sum["thrust"] = lc1["thrust"]
+lc2_ptr = 0
+for lc1_ptr in range(len(lc1)):
+    while lc2_ptr < len(lc2) and lc2.loc[lc2_ptr, "ts"] < lc1.loc[lc1_ptr, "ts"]:
+        lc2_ptr += 1
+    if lc2_ptr < len(lc2):
+        lc_sum.loc[lc1_ptr, "thrust"] += lc2.loc[lc2_ptr, "thrust"]
+    else:
+        lc_sum.loc[lc1_ptr, "thrust"] = 0
+lc_sum["thrust_med"] = lc_sum["thrust"].rolling(window=30).median()
+
 # convert mpsi to psi
 sci["st1_psi"] = sci["st1"] / 1000
 sci["st2_psi"] = sci["st2"] / 1000
@@ -278,6 +292,7 @@ def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     plot_with_windows(roc, ["bt1_psi", "bt2_psi"], "CC Transducers", [x_min, x_max])
     plot_with_windows(lc1, "thrust_med", "Load Cell 1", [x_min, x_max])
     plot_with_windows(lc2, "thrust_med", "Load Cell 2", [x_min, x_max])
+    plot_with_windows(lc_sum, "thrust_med", "Load Cell Sum", [x_min, x_max])
 
 
 interactive(
