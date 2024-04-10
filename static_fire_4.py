@@ -13,11 +13,11 @@ import hashlib
 # Run this cell once to fetch all the data into memory.
 
 # set the server to fetch from
-base_url = "http://fs-pi.local:3000"
+base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
 
 # set time range for fetching the full data
-start = datetime(year=2024, month=4, day=5, hour=15, minute=0)
-window = timedelta(minutes=20)
+start = datetime(year=2024, month=4, day=5, hour=14, minute=50)
+window = timedelta(minutes=30)
 
 
 def get_csv_with_cache(url):
@@ -40,7 +40,7 @@ def to_ts_range(start, window):
     return start_ts, end_ts
 
 
-def fetch(device):
+def fetch(device, base_url=base_url):
     # limit fetch window to avoid timeouts
     max_window_ts = int(timedelta(minutes=20).total_seconds() * 1e6)
 
@@ -60,12 +60,16 @@ def fetch(device):
     return df
 
 
+# fetch straight from raspberry pi
+fs_url = "http://fs-pi.local:3000"
+rocket_url = "http://rocket-pi.local:3000"
+
 # fetch full data
-fs = fetch("FiringStation")
-sci = fetch("Scientific")
-roc = fetch("RocketScientific")
-lc1 = fetch("LoadCell1")
-lc2 = fetch("LoadCell2")
+fs = fetch("FiringStation", fs_url)
+sci = fetch("Scientific", fs_url)
+roc = fetch("RocketScientific", rocket_url)
+lc1 = fetch("LoadCell1", fs_url)
+lc2 = fetch("LoadCell2", fs_url)
 
 # %%
 # flip load cell data
@@ -89,7 +93,7 @@ roc["bt1_psi"] = roc["bt1"] / 1000
 roc["bt2_psi"] = roc["bt2"] / 1000
 
 # clean CC transducer data
-roc["bt1_psi"] = roc["bt1_psi"].rolling(window=100).median()
+roc["bt1_psi"] = roc["bt1_psi"].rolling(window=30).median()
 # roc["bt2_psi"] = roc["bt2_psi"].rolling(window=30).median()
 
 # %%
