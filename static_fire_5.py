@@ -16,7 +16,7 @@ import hashlib
 base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
 
 # set time range for fetching the full data
-start = datetime(year=2024, month=4, day=19, hour=13, minute=1)
+start = datetime(year=2024, month=4, day=19, hour=13, minute=0)
 window = timedelta(minutes=15)
 
 
