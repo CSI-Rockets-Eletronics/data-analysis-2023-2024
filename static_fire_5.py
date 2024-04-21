@@ -16,7 +16,7 @@ import hashlib
 base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
 
 # set time range for fetching the full data
-start = datetime(year=2024, month=4, day=19, hour=13, minute=3)
+start = datetime(year=2024, month=4, day=19, hour=13, minute=1)
 window = timedelta(minutes=15)
 
 
@@ -295,3 +295,20 @@ interactive(
     x_min_fine_sec=slider(0, min=-1, max=1, step=0.01),
     x_max_fine_sec=slider(0, min=-1, max=1, step=0.01),
 )
+
+# %%
+# histogram of dt
+df = sci
+
+dt = df["ts"].diff()
+dt = dt[dt <= 2500]
+# plt.xlim(0, 2500)
+plt.hist(dt, bins=100)
+plt.show()
+
+dt1 = df["ts.1"].diff()
+dt1 = dt1[dt1 <= 2500]
+# plt.xlim(0, 2500)
+plt.hist(dt1, bins=100)
+plt.show()
+# %%
