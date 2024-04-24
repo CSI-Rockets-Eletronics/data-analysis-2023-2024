@@ -247,17 +247,17 @@ def test(x_min, x_max):
     total_impulse = lc1_impulse + lc2_impulse
 
     start_index =  1711139373.00
-    delta_t = 1711139381.3 - 1711139373.69
+    delta_t = 1711139381.31 - 1711139373.69
     mass1 = 16.29
     mass2 = 13.68
     #print(lc1['ts', 'thurst'].iloc[time_index])
     total_mass = (mass1+mass2)*0.453592
     mass_flow = total_mass/delta_t
     print('mass flow:', mass_flow, 'kg/s')
-    CCPressure = roc[(roc['ts'] >= 1711139373.69*1e6) & (roc['ts'] <= 1711139381.3*1e6)]['bt2_psi']
+    CCPressure = roc[(roc['ts'] >= 1711139373.93*1e6) & (roc['ts'] <= 1711139381.31*1e6)]['bt2_psi']
     average_pressure = np.mean(CCPressure)
     print('Average Pressure Liquid:', average_pressure , 'psi')
-
+    print('liquid burn time', delta_t, 'sec')
     print("Total impulse (pound*sec): ", total_impulse)
 
 
