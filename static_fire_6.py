@@ -78,6 +78,10 @@ median_window = 10
 lc1["thrust_med"] = lc1["thrust"].rolling(window=30).median()
 lc2["thrust_med"] = lc2["thrust"].rolling(window=30).median()
 
+# calculate prefix sum of total impulse to speed up window calculations
+lc1["thrust_int"] = (lc1["thrust"] * lc1["ts"].diff()).cumsum()
+lc2["thrust_int"] = (lc2["thrust"] * lc2["ts"].diff()).cumsum()
+
 # sum load cell data
 lc_sum = pd.merge_asof(lc1, lc2, on="ts", suffixes=("_lc1", "_lc2"))
 lc_sum["thrust"] = lc_sum["thrust_lc1"] + lc_sum["thrust_lc2"]
@@ -249,32 +253,20 @@ def plot_with_windows(df, y, title, xlim):
 
 
 # %%
-def calculate_impulse(df, x_min, x_max):
-    """
-    Integrates thrust using trapezoidal. Returns thrust in pound*sec.
-    """
-
-    df_range = df[(df["ts"] >= x_min) & (df["ts"] <= x_max)]
-    impulse = 0
-
-    for i in range(1, len(df_range)):
-        dt = df_range["ts"].iloc[i] - df_range["ts"].iloc[i - 1]
-        dt /= 1e6  # convert to seconds
-        avg_thrust = (df_range["thrust"].iloc[i] + df_range["thrust"].iloc[i - 1]) / 2
-        impulse += avg_thrust * dt
-
-    return impulse
-
-
 def test(x_min, x_max):
     lc1_range = lc1[(lc1["ts"] >= x_min) & (lc1["ts"] <= x_max)]
     lc2_range = lc2[(lc2["ts"] >= x_min) & (lc2["ts"] <= x_max)]
 
-    lc1_impulse = calculate_impulse(lc1_range, x_min, x_max)
-    lc2_impulse = calculate_impulse(lc2_range, x_min, x_max)
-    total_impulse = lc1_impulse + lc2_impulse
+    lc1_impulse = lc1_range["thrust_int"].iloc[-1] - lc1_range["thrust_int"].iloc[0]
+    lc2_impulse = lc2_range["thrust_int"].iloc[-1] - lc2_range["thrust_int"].iloc[0]
+
+    total_impulse = (lc1_impulse + lc2_impulse) / 1e6
 
     print("Total impulse (pound*sec): ", total_impulse)
+
+    total_impulse = (lc1_impulse * 2) / 1e6
+
+    print("Total impulse using 2*(load cell 1) (pound*sec): ", total_impulse)
 
 
 def calculate_mass_flow(df, x_min, x_max):
