@@ -13,8 +13,8 @@ import hashlib
 # Run this cell once to fetch all the data into memory.
 
 # set the server to fetch from
-# base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
-base_url = "http://fs-pi.local:3000"
+base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
+# base_url = "http://fs-pi.local:3000"
 
 # set time range for fetching the full data
 start = datetime(year=2024, month=4, day=26, hour=16, minute=25)
