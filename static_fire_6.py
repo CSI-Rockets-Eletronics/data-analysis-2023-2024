@@ -314,7 +314,9 @@ def plot_fn(x_min_sec, x_max_sec, x_min_fine_sec, x_max_fine_sec):
     plot_with_windows(lc1, "thrust_med", "Load Cell 1", [x_min, x_max])
     plot_with_windows(lc2, "thrust_med", "Load Cell 2", [x_min, x_max])
     plot_with_windows(lc_sum, "thrust_med", "Load Cell Sum", [x_min, x_max])
-    plot_with_windows(fs, ["thermo1C", "thermo2C"], "Thermocouples", [x_min, x_max])
+    plot_with_windows(
+        fs, ["thermo1C_med", "thermo2C_med"], "Thermocouples", [x_min, x_max]
+    )
 
 
 interactive(
