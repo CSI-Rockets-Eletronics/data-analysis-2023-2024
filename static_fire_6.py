@@ -16,6 +16,8 @@ import hashlib
 base_url = "https://csiwiki.me.columbia.edu/rocketsdata2"
 # base_url = "http://fs-pi.local:3000"
 
+cache_dir = "snapshots/static_fire_6"
+
 # set time range for fetching the full data
 start = datetime(year=2024, month=4, day=26, hour=16, minute=25)
 window = timedelta(minutes=10)
@@ -24,8 +26,8 @@ window = timedelta(minutes=10)
 def get_csv_with_cache(url):
     url_hash = hashlib.sha256(url.encode()).hexdigest()
 
-    os.makedirs("cache", exist_ok=True)
-    cache_file = os.path.join("cache", url_hash + ".csv")
+    os.makedirs(cache_dir, exist_ok=True)
+    cache_file = os.path.join(cache_dir, url_hash + ".csv")
 
     if os.path.exists(cache_file):
         return pd.read_csv(cache_file)
